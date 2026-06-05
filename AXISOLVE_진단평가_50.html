@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXISOLVE 진단평가 · 관계사·비교급·가정법</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4efe6; --paper2:#ece4d5; --ink:#211d18; --ink2:#5a5247;
+  --line:#d6ccb8; --accent:#b3502d; --accent2:#1f6a5e; --gold:#c08a2d;
+  --ok:#1f6a5e; --no:#b3502d; --card:#fbf8f1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'IBM Plex Sans KR',sans-serif; color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(192,138,45,.07), transparent 40%),
+    radial-gradient(circle at 88% 8%, rgba(31,106,94,.06), transparent 42%),
+    var(--paper);
+  line-height:1.6; padding-bottom:140px;
+}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{padding:54px 0 30px;text-align:center;position:relative}
+header .kicker{font-family:'Fraunces',serif;letter-spacing:.42em;font-size:12px;
+  text-transform:uppercase;color:var(--accent);font-weight:600}
+header h1{font-family:'Gowun Batang',serif;font-weight:700;font-size:34px;
+  margin:10px 0 4px;letter-spacing:-.5px}
+header .sub{color:var(--ink2);font-size:15px}
+.meta{display:flex;justify-content:center;gap:0;margin-top:22px;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.meta div{padding:12px 22px;border-right:1px solid var(--line);text-align:center}
+.meta div:last-child{border-right:none}
+.meta b{display:block;font-family:'Fraunces',serif;font-size:22px;color:var(--accent2)}
+.meta span{font-size:12px;color:var(--ink2);letter-spacing:.05em}
+
+.namerow{display:flex;align-items:center;gap:10px;margin:26px 0 6px}
+.namerow label{font-weight:600;font-size:14px;white-space:nowrap}
+.namerow input{flex:1;border:none;border-bottom:1.5px solid var(--line);
+  background:transparent;font-family:inherit;font-size:15px;padding:8px 4px;color:var(--ink)}
+.namerow input:focus{outline:none;border-color:var(--accent)}
+
+/* section heading */
+.shead{display:flex;align-items:baseline;gap:12px;margin:40px 0 8px;
+  padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.shead .tag{font-family:'Fraunces',serif;font-weight:600;background:var(--ink);
+  color:var(--paper);font-size:13px;padding:3px 12px;border-radius:20px;letter-spacing:.08em}
+.shead h2{font-family:'Gowun Batang',serif;font-size:19px;font-weight:700}
+
+/* question card */
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;margin:16px 0;transition:border-color .25s, box-shadow .25s}
+.q.answered{border-color:var(--accent2)}
+.q.flag{box-shadow:0 0 0 2px rgba(179,80,45,.25)}
+.qnum{font-family:'Fraunces',serif;font-weight:600;font-size:13px;color:var(--accent);
+  letter-spacing:.1em}
+.stem{font-size:16px;margin:6px 0 12px;font-family:'IBM Plex Sans KR'}
+.seg-u{border-bottom:1.6px solid var(--ink);padding:0 1px;position:relative;white-space:nowrap}
+.seg-u .sup{font-family:'Fraunces',serif;font-size:.62em;color:var(--accent);
+  vertical-align:super;margin-right:1px;font-weight:600}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;border-radius:9px;
+  cursor:pointer;transition:background .15s;font-size:15px}
+.opt:hover{background:var(--paper2)}
+.opt input{display:none}
+.bul{font-family:'Fraunces',serif;flex:0 0 auto;width:24px;height:24px;border-radius:50%;
+  border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;
+  color:var(--ink2);transition:all .15s;margin-top:1px}
+.opt input:checked + .bul{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.opt .txt{flex:1}
+/* result states (after grading) */
+.q.graded .opt{cursor:default}
+.q.graded .opt:hover{background:transparent}
+.opt.correct .bul{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.correct{background:rgba(31,106,94,.08)}
+.opt.wrong .bul{background:var(--no);border-color:var(--no);color:#fff}
+.opt.wrong{background:rgba(179,80,45,.08)}
+.explain{margin-top:10px;padding:10px 14px;border-left:3px solid var(--accent2);
+  background:var(--paper2);border-radius:0 8px 8px 0;font-size:13.5px;display:none}
+.q.graded .explain{display:block}
+.explain b{color:var(--accent2)}
+.explain .fix{font-family:'Fraunces',serif;color:var(--no)}
+
+/* footer bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(33,29,24,.96);
+  backdrop-filter:blur(8px);color:var(--paper);padding:14px 20px;z-index:50}
+.bar .inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.prog{flex:1}
+.prog .ptrack{height:6px;background:rgba(255,255,255,.18);border-radius:6px;overflow:hidden}
+.prog .pfill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--accent));
+  border-radius:6px;transition:width .3s}
+.prog .ptxt{font-size:12px;margin-top:5px;color:#cfc6b6}
+.btn{font-family:'IBM Plex Sans KR';font-weight:600;font-size:15px;border:none;cursor:pointer;
+  padding:13px 26px;border-radius:30px;background:var(--gold);color:#211d18;transition:transform .12s,opacity .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.ghost{background:transparent;color:var(--paper);border:1.4px solid rgba(255,255,255,.4)}
+
+/* result panel */
+#result{display:none;margin:34px 0 10px}
+.scorecard{background:var(--ink);color:var(--paper);border-radius:20px;padding:34px 30px;
+  text-align:center;position:relative;overflow:hidden}
+.scorecard::after{content:"AXIS";position:absolute;right:-10px;bottom:-22px;
+  font-family:'Fraunces',serif;font-size:120px;font-weight:600;opacity:.06;letter-spacing:-.04em}
+.scorecard .label{font-family:'Fraunces',serif;letter-spacing:.3em;font-size:12px;color:var(--gold);text-transform:uppercase}
+.scorecard .score{font-family:'Fraunces',serif;font-size:74px;line-height:1;margin:8px 0;font-weight:600}
+.scorecard .score small{font-size:26px;opacity:.55}
+.verdict{display:inline-block;margin-top:6px;padding:6px 20px;border-radius:24px;
+  font-weight:700;font-size:15px;letter-spacing:.05em}
+.verdict.pass{background:var(--accent2);color:#fff}
+.verdict.fail{background:var(--accent);color:#fff}
+.scorecard .meta2{margin-top:14px;font-size:13px;color:#cfc6b6}
+
+.block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:18px}
+.block h3{font-family:'Gowun Batang',serif;font-size:17px;margin-bottom:14px;
+  display:flex;align-items:center;gap:8px}
+.block h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* area bars */
+.area{margin:11px 0}
+.area .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+.area .top b{font-weight:600}
+.area .top .n{font-family:'Fraunces',serif;color:var(--ink2)}
+.area .track{height:9px;background:var(--paper2);border-radius:6px;overflow:hidden}
+.area .fill{height:100%;border-radius:6px;transition:width .6s ease}
+
+/* weakness table */
+.wk{width:100%;border-collapse:collapse;font-size:13px}
+.wk th,.wk td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.wk th{font-family:'Fraunces',serif;font-weight:600;color:var(--ink2);font-size:12px;letter-spacing:.04em}
+.wk td.c{text-align:center;font-family:'Fraunces',serif}
+.wk .code{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;
+  border-radius:6px;background:var(--ink);color:var(--paper);font-family:'Fraunces',serif;font-size:12px}
+.wk tr.weak td{background:rgba(179,80,45,.07)}
+.wk .miss{color:var(--no);font-weight:700}
+.wk .full{color:var(--ok);font-weight:700}
+.empty{color:var(--ink2);font-size:14px;font-style:italic}
+.hint{font-size:12.5px;color:var(--ink2);margin-top:12px}
+@media(max-width:560px){
+  header h1{font-size:27px} .meta div{padding:10px 14px}
+  .scorecard .score{font-size:58px} .bar .inner{gap:10px}
+  .btn{padding:12px 18px;font-size:14px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">AXISOLVE · 문법의 축</div>
+    <h1>중2 내신 진단평가</h1>
+    <div class="sub">관계대명사 · 관계부사 · 비교급 · 가정법</div>
+    <div class="meta">
+      <div><b>50</b><span>문항</span></div>
+      <div><b>100</b><span>만점 · 2점/문항</span></div>
+      <div><b>80</b><span>통과 기준</span></div>
+    </div>
+    <div class="namerow">
+      <label for="sname">학생 이름</label>
+      <input id="sname" type="text" placeholder="이름을 입력하세요 (선택)">
+    </div>
+  </header>
+
+  <div id="result"></div>
+  <div id="quiz"></div>
+</div>
+
+<div class="bar"><div class="inner">
+  <div class="prog">
+    <div class="ptrack"><div class="pfill" id="pfill"></div></div>
+    <div class="ptxt" id="ptxt">0 / 50 응답</div>
+  </div>
+  <button class="btn ghost" id="resetBtn" style="display:none" onclick="resetQuiz()">다시 풀기</button>
+  <button class="btn" id="submitBtn" onclick="grade()" disabled>채점하기</button>
+</div></div>
+
+<script>
+const DATA = {"TYPE1":[["I have a friend who lives in Busan.","The book that you lent me was great.","She is the girl which won the prize.","This is the house whose roof is red.","The man whom I met was kind."],["The pen which I bought is blue.","This is the song that I like it.","He is the doctor who helped us.","The car that she drives is new.","I know a boy whose father is a pilot."],["Tell me what you want.","What he said was true.","This is what I need.","I believe what you told me.","The thing what I want is rest."],["My mother, who is a nurse, is busy.","Seoul, which is the capital, is big.","I have two sons, who are twins.","He passed the exam, that surprised us.","This book, which I love, is rare."],["The house in which I live is old.","This is the friend with whom I study.","The chair on which he sat broke.","The man to who I spoke left.","The pen with which I write is mine."],["The students who study hard pass.","The boy who play soccer is tall.","The dog that barks is mine.","The girls who sing are happy.","The man who works here is kind."],["I saw a cat which is black.","He is the tallest boy that I know.","This is the same bag that I lost.","The book who is on the desk is mine.","Everything that glitters is not gold."],["This is the city where I was born.","I know the reason why he left.","Tell me the time when you arrive.","This is the house where is beautiful.","That is the park where we played."],["Sunday is the day when I rest.","I remember the day when we met.","Spring is the season when flowers bloom.","This is the moment when he cried.","Tell me the day where you will come."],["I don't know the reason why she cried.","Tell me the reason when you are late.","That is the reason why he quit.","Do you know the reason why it happened?","This is the reason why I came."],["This is how he solved it.","I like the way she talks.","Tell me how you did it.","That is the way how he won.","Show me how it works."],["The town where I grew up is small.","The day when we met was rainy.","The house where I bought is big.","The reason why she left is unclear.","The place where we stayed was clean."],["This is where I work.","Monday is when school starts.","That is why I am sad.","This is the office where he works at.","Tell me the year when you graduated."],["She is taller than her sister.","This box is more heavy than that.","He is smarter than me.","Today is colder than yesterday.","This road is wider than that one."],["He is older than I.","This is bigger than that.","She runs faster then him.","Gold is more expensive than silver.","My bag is heavier than yours."],["This is much bigger than that.","He is far taller than me.","It is even colder today.","She is very smarter than him.","This is a lot better than before."],["He is the tallest in the class.","This is the most beautiful flower.","She is the best student here.","Mt. Everest is highest mountain in the world.","It is the largest city in Korea."],["She is as tall as her brother.","This is as big as that.","He runs as fast as me.","It is as cold as yesterday.","She is as taller as him."],["He is taller than any other boy.","Seoul is bigger than any other city.","She is smarter than any other students.","This is older than any other building.","Gold is more valuable than any other metal."],["The more you study, the smarter you get.","It is getting colder and colder.","The harder he works, the more he earns.","The faster you run, the soonest you arrive.","She became more and more famous."],["If I had money, I would buy it.","If I were you, I would go.","If it rained, we would stay home.","If I knew her, I will call her.","If he studied, he would pass."],["If I were rich, I would travel.","If she were here, she would help.","If I was a bird, I would fly.","If he were tall, he would play.","If they were free, they would come."],["I wish I were taller.","I wish I had a car.","I wish I can fly.","I wish she were here.","I wish I knew the answer."],["If I have wings, I would fly.","If I had time, I would help.","If she came, we would be glad.","If it were sunny, we would swim.","If I knew, I would tell you."],["He talks as if he were a teacher.","She acts as if she knew everything.","If I were you, I would apologize.","I wish it were summer now.","If I am you, I would not do that."]],"T2":[[{"t":"I have ","u":false},{"t":"a friend","u":1},{"t":" ","u":false},{"t":"which","u":1},{"t":" ","u":false},{"t":"hair","u":1},{"t":" ","u":false},{"t":"is","u":1},{"t":" very ","u":false},{"t":"long","u":1},{"t":".","u":false}],[{"t":"The movie ","u":false},{"t":"that","u":1},{"t":" ","u":false},{"t":"we","u":1},{"t":" ","u":false},{"t":"watched","u":1},{"t":" ","u":false},{"t":"it","u":1},{"t":" ","u":false},{"t":"was boring","u":1},{"t":".","u":false}],[{"t":"This is ","u":false},{"t":"the bike","u":1},{"t":" ","u":false},{"t":"who","u":1},{"t":" ","u":false},{"t":"was","u":1},{"t":" ","u":false},{"t":"made","u":1},{"t":" ","u":false},{"t":"in Japan","u":1},{"t":".","u":false}],[{"t":"The boy ","u":false},{"t":"who","u":1},{"t":" ","u":false},{"t":"live","u":1},{"t":" ","u":false},{"t":"next door","u":1},{"t":" ","u":false},{"t":"is","u":1},{"t":" ","u":false},{"t":"my classmate","u":1},{"t":".","u":false}],[{"t":"My uncle, ","u":false},{"t":"that","u":1},{"t":" ","u":false},{"t":"lives","u":1},{"t":" ","u":false},{"t":"in Canada","u":1},{"t":", ","u":false},{"t":"will","u":1},{"t":" ","u":false},{"t":"visit us","u":1},{"t":".","u":false}],[{"t":"Show","u":1},{"t":" ","u":false},{"t":"me","u":1},{"t":" ","u":false},{"t":"the thing","u":1},{"t":" ","u":false},{"t":"what","u":1},{"t":" ","u":false},{"t":"you made","u":1},{"t":".","u":false}],[{"t":"This is ","u":false},{"t":"the village","u":1},{"t":" ","u":false},{"t":"which","u":1},{"t":" ","u":false},{"t":"I","u":1},{"t":" ","u":false},{"t":"spent my","u":1},{"t":" ","u":false},{"t":"childhood","u":1},{"t":".","u":false}],[{"t":"Winter","u":1},{"t":" ","u":false},{"t":"is the season","u":1},{"t":" ","u":false},{"t":"where","u":1},{"t":" ","u":false},{"t":"we","u":1},{"t":" ","u":false},{"t":"ski","u":1},{"t":".","u":false}],[{"t":"Tell","u":1},{"t":" ","u":false},{"t":"me","u":1},{"t":" ","u":false},{"t":"the reason","u":1},{"t":" ","u":false},{"t":"when","u":1},{"t":" ","u":false},{"t":"you were absent","u":1},{"t":".","u":false}],[{"t":"I","u":1},{"t":" ","u":false},{"t":"don't","u":1},{"t":" ","u":false},{"t":"know the way","u":1},{"t":" ","u":false},{"t":"how","u":1},{"t":" ","u":false},{"t":"he escaped","u":1},{"t":".","u":false}],[{"t":"This is ","u":false},{"t":"the room","u":1},{"t":" ","u":false},{"t":"where","u":1},{"t":" ","u":false},{"t":"he","u":1},{"t":" ","u":false},{"t":"studies","u":1},{"t":" ","u":false},{"t":"in","u":1},{"t":".","u":false}],[{"t":"The house ","u":false},{"t":"where","u":1},{"t":" ","u":false},{"t":"I","u":1},{"t":" ","u":false},{"t":"bought","u":1},{"t":" ","u":false},{"t":"last year","u":1},{"t":" ","u":false},{"t":"is big","u":1},{"t":".","u":false}],[{"t":"This question ","u":false},{"t":"is","u":1},{"t":" ","u":false},{"t":"more","u":1},{"t":" ","u":false},{"t":"easy","u":1},{"t":" ","u":false},{"t":"than","u":1},{"t":" ","u":false},{"t":"that one","u":1},{"t":".","u":false}],[{"t":"She ","u":false},{"t":"is","u":1},{"t":" ","u":false},{"t":"kinder","u":1},{"t":" ","u":false},{"t":"then","u":1},{"t":" ","u":false},{"t":"her","u":1},{"t":" ","u":false},{"t":"sister","u":1},{"t":".","u":false}],[{"t":"This ","u":false},{"t":"bag","u":1},{"t":" ","u":false},{"t":"is","u":1},{"t":" ","u":false},{"t":"very","u":1},{"t":" ","u":false},{"t":"heavier","u":1},{"t":" ","u":false},{"t":"than mine","u":1},{"t":".","u":false}],[{"t":"Health ","u":false},{"t":"is","u":1},{"t":" ","u":false},{"t":"the most","u":1},{"t":" ","u":false},{"t":"important","u":1},{"t":" ","u":false},{"t":"than","u":1},{"t":" ","u":false},{"t":"money","u":1},{"t":".","u":false}],[{"t":"He ","u":false},{"t":"runs","u":1},{"t":" ","u":false},{"t":"as","u":1},{"t":" ","u":false},{"t":"faster","u":1},{"t":" ","u":false},{"t":"as","u":1},{"t":" ","u":false},{"t":"I do","u":1},{"t":".","u":false}],[{"t":"Tokyo ","u":false},{"t":"is","u":1},{"t":" ","u":false},{"t":"larger","u":1},{"t":" ","u":false},{"t":"than","u":1},{"t":" ","u":false},{"t":"any other","u":1},{"t":" ","u":false},{"t":"cities","u":1},{"t":".","u":false}],[{"t":"If I ","u":false},{"t":"had","u":1},{"t":" ","u":false},{"t":"a","u":1},{"t":" ","u":false},{"t":"robot","u":1},{"t":", I ","u":false},{"t":"will","u":1},{"t":" ","u":false},{"t":"clean my room","u":1},{"t":".","u":false}],[{"t":"If she ","u":false},{"t":"was","u":1},{"t":" ","u":false},{"t":"a","u":1},{"t":" ","u":false},{"t":"bird","u":1},{"t":", she ","u":false},{"t":"would","u":1},{"t":" ","u":false},{"t":"fly away","u":1},{"t":".","u":false}],[{"t":"If I ","u":false},{"t":"know","u":1},{"t":" ","u":false},{"t":"his","u":1},{"t":" ","u":false},{"t":"number","u":1},{"t":", I ","u":false},{"t":"would","u":1},{"t":" ","u":false},{"t":"call him","u":1},{"t":".","u":false}],[{"t":"I ","u":false},{"t":"wish","u":1},{"t":" ","u":false},{"t":"I","u":1},{"t":" ","u":false},{"t":"can","u":1},{"t":" ","u":false},{"t":"speak","u":1},{"t":" ","u":false},{"t":"Chinese","u":1},{"t":".","u":false}],[{"t":"If it ","u":false},{"t":"were","u":1},{"t":" ","u":false},{"t":"warm","u":1},{"t":", we ","u":false},{"t":"would","u":1},{"t":" ","u":false},{"t":"played","u":1},{"t":" ","u":false},{"t":"outside","u":1},{"t":".","u":false}],[{"t":"He ","u":false},{"t":"speaks","u":1},{"t":" ","u":false},{"t":"as","u":1},{"t":" ","u":false},{"t":"if","u":1},{"t":" ","u":false},{"t":"he","u":1},{"t":" ","u":false},{"t":"is a doctor","u":1},{"t":".","u":false}],[{"t":"I ","u":false},{"t":"wish","u":1},{"t":" ","u":false},{"t":"I","u":1},{"t":" ","u":false},{"t":"have","u":1},{"t":" ","u":false},{"t":"more","u":1},{"t":" ","u":false},{"t":"free time","u":1},{"t":".","u":false}]],"ANS":[[3,"관계대명사","A","which → who","사람 선행사·주격 관계대명사 선택"],[2,"관계대명사","B","that I like it → that I like","목적격 관계대명사 뒤 목적어 중복"],[5,"관계대명사","D","the thing what → the thing that","what은 선행사를 포함(중복 불가)"],[4,"관계대명사","E","that → which","계속적 용법(콤마)에 that 불가"],[4,"관계대명사","F","to who → to whom","전치사 뒤 목적격 whom"],[2,"관계대명사","C","play → plays","주격 관계대명사절 동사 수일치(단수)"],[4,"관계대명사","A","who → which/that","사물 선행사에 who 불가"],[4,"관계부사","H","where is → which/that is","뒤 문장 불완전(주어 결여)→관계대명사"],[5,"관계부사","G","where → when","시간 선행사에는 when"],[2,"관계부사","G","when → why","이유 선행사에는 why"],[4,"관계부사","I","the way how → the way 또는 how","the way와 how 동시 사용 불가"],[3,"관계부사","H","where → which/that","타동사 bought 목적어 결여(불완전)"],[4,"관계부사","J","works at → works","where = at which, 전치사 중복"],[2,"비교급","K","more heavy → heavier","단음절 형용사는 -er"],[3,"비교급","L","then → than","비교 접속사 than/then 혼동"],[4,"비교급","M","very → much/far/even","비교급 강조에 very 불가"],[4,"비교급","N","highest → the highest","최상급 앞 the 누락"],[5,"비교급","O","as taller as → as tall as","원급 비교는 원급 사용"],[3,"비교급","P","any other students → any other student","than any other + 단수명사"],[4,"비교급","Q","the soonest → the sooner","the+비교급, the+비교급 구문"],[4,"가정법","T","will → would","가정법 과거 주절: would+동사원형"],[3,"가정법","S","was → were","가정법 과거 be동사는 were"],[3,"가정법","U","can → could","I wish + 가정법 과거(조동사 과거형)"],[1,"가정법","R","have → had","가정법 과거 if절 동사 과거형"],[5,"가정법","S","am → were","if절 be동사 were"],[2,"관계대명사","A","which → whose","소유격 관계대명사 whose"],[4,"관계대명사","B","it 삭제","목적격 관계대명사 뒤 목적어 중복"],[2,"관계대명사","A","who → which/that","사물 선행사에 who 불가"],[2,"관계대명사","C","live → lives","주격 관계대명사 동사 수일치(단수)"],[1,"관계대명사","E","that → who","계속적 용법(콤마)·사람에 who"],[4,"관계대명사","D","what → that","선행사 the thing 있음 → what 불가"],[2,"관계부사","H","which → where","뒤 문장 완전·장소 선행사"],[3,"관계부사","G","where → when","시간 선행사 season → when"],[4,"관계부사","G","when → why","이유 선행사 reason → why"],[4,"관계부사","I","how 삭제","the way how 동시 사용 불가"],[5,"관계부사","J","in 삭제","where = in which, 전치사 중복"],[1,"관계부사","H","where → which/that","타동사 bought 목적어 결여(불완전)"],[3,"비교급","K","more easy → easier","-y로 끝나는 형용사: easy→easier"],[3,"비교급","L","then → than","비교 접속사 than"],[3,"비교급","M","very → much/far/even","비교급 강조에 very 불가"],[3,"비교급","K","the most → more","비교 대상(than) 있으면 비교급"],[3,"비교급","O","faster → fast","as ~ as 원급 비교"],[5,"비교급","P","cities → city","than any other + 단수명사"],[4,"가정법","T","will → would","가정법 과거 주절 would"],[1,"가정법","S","was → were","가정법 과거 be동사 were"],[1,"가정법","R","know → knew","if절 동사 과거형"],[3,"가정법","U","can → could","I wish + 가정법 과거"],[4,"가정법","T","played → play","주절 would + 동사원형"],[5,"가정법","V","is → were","as if + 가정법 과거"],[3,"가정법","U","have → had","I wish + 가정법 과거(동사 과거형)"]],"codeDesc":{"A":"관계대명사 격·선행사(사람/사물) 선택","B":"목적격 관계대명사 뒤 목적어 중복","C":"주격 관계대명사절 동사 수일치","D":"관계대명사 what (선행사 포함/중복)","E":"계속적 용법(콤마)에서 that 불가","F":"전치사 + 관계대명사 격","G":"관계부사 선택(where/when/why)","H":"관계부사 vs 관계대명사(완전성)","I":"the way how 동시 사용 불가","J":"관계부사 + 전치사 중복","K":"비교급/최상급 형태·선택","L":"than / then 혼동","M":"비교급 강조 부사(much/far/even)","N":"최상급 the 누락","O":"원급 비교 as ~ as","P":"than any other + 단수명사","Q":"the 비교급, the 비교급 구문","R":"가정법 과거 if절 동사 과거형","S":"가정법 과거 be동사 were","T":"가정법 과거 주절 would + 동사원형","U":"I wish + 가정법 과거","V":"as if + 가정법 과거"}};
+const MARK = ["①","②","③","④","⑤"];
+const AREAS = ["관계대명사","관계부사","비교급","가정법"];
+const AREA_COLOR = {"관계대명사":"#b3502d","관계부사":"#c08a2d","비교급":"#1f6a5e","가정법":"#3a5a8c"};
+const picks = {};   // qIndex(0-49) -> choice(0-4)
+let graded = false;
+
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function buildStem2(segs){
+  let mi=0, html='';
+  segs.forEach(p=>{
+    if(p.u){ html+='<span class="seg-u"><span class="sup">'+MARK[mi]+'</span>'+esc(p.t)+'</span>'; mi++; }
+    else html+=esc(p.t);
+  });
+  return html;
+}
+function optionRow(qi, oi, text){
+  return '<label class="opt" data-q="'+qi+'" data-o="'+oi+'">'
+    +'<input type="radio" name="q'+qi+'" value="'+oi+'" onchange="pick('+qi+','+oi+')">'
+    +'<span class="bul">'+MARK[oi]+'</span><span class="txt">'+text+'</span></label>';
+}
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  let h='';
+  // Section 1
+  h+='<div class="shead"><span class="tag">유형 1</span><h2>어법상 틀린 문장을 고르시오.</h2></div>';
+  DATA.TYPE1.forEach((choices,i)=>{
+    const qi=i;
+    h+='<div class="q" id="q'+qi+'"><div class="qnum">Q'+(qi+1)+'</div>';
+    h+='<div class="opts">';
+    choices.forEach((c,oi)=> h+=optionRow(qi,oi, esc(c)));
+    h+='</div><div class="explain"></div></div>';
+  });
+  // Section 2
+  h+='<div class="shead"><span class="tag">유형 2</span><h2>밑줄 친 부분 중 틀린 것을 고르시오.</h2></div>';
+  DATA.T2.forEach((segs,i)=>{
+    const qi=25+i;
+    h+='<div class="q" id="q'+qi+'"><div class="qnum">Q'+(qi+1)+'</div>';
+    h+='<div class="stem">'+buildStem2(segs)+'</div><div class="opts">';
+    for(let oi=0;oi<5;oi++) h+=optionRow(qi,oi, MARK[oi]+' 번');
+    h+='</div><div class="explain"></div></div>';
+  });
+  quiz.innerHTML=h;
+}
+
+function pick(qi,oi){
+  if(graded) return;
+  picks[qi]=oi;
+  document.getElementById('q'+qi).classList.add('answered');
+  updateProgress();
+}
+function updateProgress(){
+  const n=Object.keys(picks).length;
+  document.getElementById('pfill').style.width=(n/50*100)+'%';
+  document.getElementById('ptxt').textContent=n+' / 50 응답';
+  document.getElementById('submitBtn').disabled = n<50;
+  document.getElementById('ptxt').textContent = n<50 ? (n+' / 50 응답 · 남은 '+(50-n)+'개') : '50 / 50 응답 완료';
+}
+
+function grade(){
+  if(Object.keys(picks).length<50){
+    const first=[...Array(50).keys()].find(i=>picks[i]===undefined);
+    document.getElementById('q'+first).scrollIntoView({block:'center'});
+    document.getElementById('q'+first).classList.add('flag');
+    return;
+  }
+  graded=true;
+  let correct=0;
+  const areaStat={}; AREAS.forEach(a=>areaStat[a]={c:0,t:0});
+  const codeStat={};
+
+  DATA.ANS.forEach((a,qi)=>{
+    const ans=a[0]-1, area=a[1], code=a[2], fix=a[3], diag=a[4];
+    const sel=picks[qi];
+    const isC = sel===ans;
+    if(isC) correct++;
+    areaStat[area].t++; if(isC) areaStat[area].c++;
+    if(!codeStat[code]) codeStat[code]={c:0,t:0,area:area};
+    codeStat[code].t++; if(isC) codeStat[code].c++;
+
+    // mark options
+    const qel=document.getElementById('q'+qi);
+    qel.classList.add('graded'); qel.classList.remove('flag');
+    qel.querySelectorAll('.opt').forEach(o=>{
+      const oi=+o.dataset.o;
+      if(oi===ans) o.classList.add('correct');
+      else if(oi===sel) o.classList.add('wrong');
+    });
+    const ex=qel.querySelector('.explain');
+    ex.innerHTML = '정답 <b>'+MARK[ans]+'</b> · <span class="fix">'+esc(fix)+'</span><br>'
+      +'<b>['+area+'·'+code+']</b> '+esc(diag);
+  });
+
+  const score=correct*2;
+  const pass=score>=80;
+  const name=(document.getElementById('sname').value||'').trim();
+
+  // build result
+  let h='';
+  h+='<div class="scorecard"><div class="label">'+(name?esc(name)+' 님의 결과':'진단 결과')+'</div>';
+  h+='<div class="score">'+score+'<small> / 100</small></div>';
+  h+='<div class="verdict '+(pass?'pass':'fail')+'">'+(pass?'합격 · PASS':'불합격 · 재학습 필요')+'</div>';
+  h+='<div class="meta2">정답 '+correct+' / 50 · 통과 기준 80점 ('+(pass?'+'+(score-80):'부족 '+(80-score))+'점)</div></div>';
+
+  // area breakdown
+  h+='<div class="block"><h3><span class="dot"></span>영역별 정답률</h3>';
+  AREAS.forEach(a=>{
+    const s=areaStat[a], pct=Math.round(s.c/s.t*100);
+    const col = pct>=80?'#1f6a5e':(pct>=60?'#c08a2d':'#b3502d');
+    h+='<div class="area"><div class="top"><b>'+a+'</b><span class="n">'+s.c+'/'+s.t+' · '+pct+'%</span></div>'
+      +'<div class="track"><div class="fill" style="width:'+pct+'%;background:'+col+'"></div></div></div>';
+  });
+  h+='<div class="hint">정답률 60% 미만 영역은 우선 보충 대상입니다.</div></div>';
+
+  // weakness table
+  const codes=Object.keys(DATA.codeDesc);
+  const weak=codes.filter(c=>codeStat[c] && codeStat[c].c<codeStat[c].t);
+  h+='<div class="block"><h3><span class="dot"></span>약점 진단 (틀린 세부 항목)</h3>';
+  if(weak.length===0){
+    h+='<p class="empty">틀린 항목이 없습니다. 모든 진단 코드를 통과했습니다.</p>';
+  } else {
+    h+='<table class="wk"><thead><tr><th>코드</th><th>영역</th><th>세부 진단 항목</th><th style="text-align:center">오답</th></tr></thead><tbody>';
+    weak.forEach(c=>{
+      const st=codeStat[c], miss=st.t-st.c;
+      h+='<tr class="weak"><td class="c"><span class="code">'+c+'</span></td><td>'+st.area+'</td>'
+        +'<td>'+esc(DATA.codeDesc[c])+'</td><td class="c miss">'+miss+'/'+st.t+'</td></tr>';
+    });
+    h+='</tbody></table><div class="hint">위 항목 순서대로 보충 학습을 권장합니다. 아래 문항별 해설에서 정답·근거를 확인하세요.</div>';
+  }
+  h+='</div>';
+
+  const res=document.getElementById('result');
+  res.innerHTML=h; res.style.display='block';
+  document.getElementById('submitBtn').style.display='none';
+  document.getElementById('resetBtn').style.display='inline-block';
+  document.getElementById('pfill').style.width='100%';
+  document.getElementById('ptxt').textContent='채점 완료 · '+score+'점';
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function resetQuiz(){
+  for(const k in picks) delete picks[k];
+  graded=false;
+  document.getElementById('result').style.display='none';
+  document.getElementById('submitBtn').style.display='inline-block';
+  document.getElementById('resetBtn').style.display='none';
+  render();
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render();
+updateProgress();
+</script>
+</body>
+</html>
